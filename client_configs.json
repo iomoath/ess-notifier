@@ -1,0 +1,9 @@
+[
+   {
+      "name":"Site-1-SIEM",
+      "splunk_ip":"10.90.250.10",
+      "splunk_api_port":8089,
+      "username":"ess-notifier",
+      "password":"changeme"
+   }
+]
