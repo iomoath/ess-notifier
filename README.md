@@ -46,7 +46,8 @@ Event ID: 227C3B03-8CB7-4A1V-819F-0CED9DB5907D@@notable@@910e1505d0b33e128c486c8
 4. Add Splunk instance(s) information in ```client_configs.json```
 
 To enable auto scan, enable cron service and create the following entries in crontab:
-5. create cron jobs to run every 1 minute. ```$ crontab -e``` and add the below lines
+
+Create cron jobs to run every 1 minute. ```$ crontab -e``` and add the below lines
 
 ```
 * * * * * /usr/bin/python3 /opt/ess-notifier/main.py -s &> /dev/null
