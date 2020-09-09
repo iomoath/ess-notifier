@@ -3,7 +3,7 @@
 ESS Notifier tool is simple security Splunk ESS SIEM (Enterprise Security) notable scanner, the purpose of this tool is to send email notifications whenever a new security notable event is triggered in Splunk ESS.
 
 
-This tool can be useful for Security Operations Centers (SOC), decreasing time on
+This tool can be useful for Security Operations Centers (SOC), decreasing time spent on watching multiple Splunk dashboards.
 
 
 ### Features
