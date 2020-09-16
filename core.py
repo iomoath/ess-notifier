@@ -8,7 +8,7 @@ import db
 import email_sender
 
 # QUERY_GET_NOTABLES_METADATA = '|`es_notable_events` | where status=1'
-QUERY_GET_NOTABLES_METADATA = '`notable`|  where status=1 | table _time, owner,rule_name,rule_title,security_domain,src,dest,user,status_group,urgency,owner,event_id'
+QUERY_GET_NOTABLES_METADATA = '`notable`|  where status=1 | table _time, owner,rule_name,rule_title,security_domain,src,dest,user,status_group,urgency,event_id'
 
 
 
