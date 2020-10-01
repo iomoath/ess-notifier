@@ -71,7 +71,7 @@ def scan_for_unassigned_notables():
             print_verbose("[-] Error: incorrect credentials for '{}'. Skipping.".format(config_name))
             continue
 
-        print_verbose("[+] Successfully connected to '{}'".format(config_name))
+        print_verbose("\n[+] Successfully connected to '{}'".format(config_name))
 
 
         jobs = service.jobs
@@ -112,21 +112,24 @@ def scan_for_unassigned_notables():
 
 
             for result in job_results:
-                result_dict = json.loads(result)
+                try:
+                    result_dict = json.loads(result)
 
-                for notable_event in result_dict['results']:
-                    event_id = notable_event.get('event_id')
+                    for notable_event in result_dict['results']:
+                        event_id = notable_event.get('event_id')
 
-                    if event_id is None or len(event_id) < 10:
-                        print_verbose(100 * '#')
-                        continue
+                        if event_id is None or len(event_id) < 10:
+                            print_verbose(100 * '#')
+                            continue
 
-                    # Check if event ID already processed, query the database
-                    if db.is_event_already_processed(event_id):
-                        continue
+                        # Check if event ID already processed, query the database
+                        if db.is_event_already_processed(event_id):
+                            continue
 
-                    new_event_count += 1
-                    process_notable_event(config_name, notable_event)
+                        new_event_count += 1
+                        process_notable_event(config_name, notable_event)
+                except ValueError:
+                    print_verbose("[*] '{}' Error fetching search results. Skipping...".format(config_name))
 
             i += 1000
 
