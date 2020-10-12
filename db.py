@@ -113,7 +113,7 @@ def get_unsent_messages():
     conn = db_connect()
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM email_msg WHERE is_sent='False'")
+        cursor.execute("SELECT * FROM email_msg WHERE is_sent='False' LIMIT 15")
         rows = cursor.fetchall()
         list_messages = []
         for row in rows:
