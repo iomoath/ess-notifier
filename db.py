@@ -30,11 +30,21 @@ def create_tables():
     attachment TEXT,
     is_sent VARCHAR(6) DEFAULT 'False')"""
 
+    slack_msg_query = """
+        CREATE TABLE IF NOT EXISTS slack_msg (
+        id INTEGER PRIMARY KEY,
+        channel_name TEXT NOT NULL,
+        subject TEXT NOT NULL,
+        body TEXT NOT NULL,
+        attachment TEXT,
+        is_sent VARCHAR(6) DEFAULT 'False')"""
+
     conn = db_connect()
     try:
         cursor = conn.cursor()
         cursor.execute(notables)
         cursor.execute(email_msg_query)
+        cursor.execute(slack_msg_query)
     except:
         pass
     finally:
@@ -94,11 +104,49 @@ def insert_email_msg(email_msg_dict):
         conn.close()
 
 
+def insert_slack_msg(msg_dict):
+    conn = db_connect()
+    try:
+        cursor = conn.cursor()
+        query = """
+            INSERT INTO slack_msg (channel_name, subject, body, attachment)
+            VALUES (?, ?, ?, ?)"""
+
+        cursor.execute(query,
+                       (
+                           msg_dict["channel_name"],
+                           msg_dict["subject"],
+                           msg_dict["body"],
+                           msg_dict["attachment"]))
+        return cursor.lastrowid
+    except:
+        conn.rollback()
+        raise
+    finally:
+        conn.commit()
+        conn.close()
+
+
 def delete_msg(msg_id):
     conn = db_connect()
     try:
         cursor = conn.cursor()
         query = """DELETE FROM email_msg WHERE id=?"""
+        cursor.execute(query, (msg_id,))
+        return cursor.rowcount
+    except:
+        conn.rollback()
+        raise
+    finally:
+        conn.commit()
+        conn.close()
+
+
+def delete_slack_msg(msg_id):
+    conn = db_connect()
+    try:
+        cursor = conn.cursor()
+        query = """DELETE FROM slack_msg WHERE id=?"""
         cursor.execute(query, (msg_id,))
         return cursor.rowcount
     except:
@@ -134,6 +182,32 @@ def get_unsent_messages():
         conn.close()
 
 
+def get_unsent_slack_messages():
+    conn = db_connect()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM slack_msg WHERE is_sent='False' LIMIT 15")
+        rows = cursor.fetchall()
+        list_messages = []
+        for row in rows:
+            msg = {
+                "id": row[0],
+                "channel_name": row[1],
+                "subject": row[2],
+                "body": row[3],
+                "attachments": row[4],
+                "is_sent": row[5]
+            }
+            list_messages.append(msg)
+        return list_messages
+    except:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+
+
 def delete_sent_messages():
     conn = db_connect()
     try:
@@ -148,6 +222,21 @@ def delete_sent_messages():
         conn.commit()
         conn.close()
 
+
+
+def delete_slack_sent_messages():
+    conn = db_connect()
+    try:
+        cursor = conn.cursor()
+        query = """DELETE FROM slack_msg WHERE is_sent=?"""
+        cursor.execute(query, ("True",))
+        return cursor.rowcount
+    except:
+        conn.rollback()
+        raise
+    finally:
+        conn.commit()
+        conn.close()
 
 
 # init the database, if no db file or tables, it will be created here

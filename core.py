@@ -5,7 +5,9 @@ from common_functions import *
 import emsg_constructor
 from config import *
 import db
-import email_sender
+import email_services
+import slack_services
+
 
 # QUERY_GET_NOTABLES_METADATA = '|`es_notable_events` | where status=1'
 QUERY_GET_NOTABLES_METADATA = '`notable`|  where status=1 | table _time, owner,rule_name,rule_title,security_domain,src,dest,user,status_group,urgency,event_id'
@@ -29,7 +31,7 @@ def normalize_notable_event_dict(notable_event_info_dict):
 
 
 
-def process_notable_event(customer_name, notable_event_info_dict):
+def process_notable_event(customer_name, notable_event_info_dict, slack_channel=None):
     # Parse useful data
     event_info = normalize_notable_event_dict(notable_event_info_dict)
 
@@ -37,10 +39,16 @@ def process_notable_event(customer_name, notable_event_info_dict):
     db.insert_event_info(event_info)
 
     # Construct Email message & queue for sending
-    if EMAIL_ALERTS_ENABLED:
+    if EMAIL_NOTIFICATIONS_ENABLED:
         # Construct email message
-        email_msg_dict = emsg_constructor.new_notable_event(customer_name, event_info)
+        email_msg_dict = emsg_constructor.construct_email_notification_msg_dict(customer_name, event_info)
         db.insert_email_msg(email_msg_dict)
+
+    # Construct Slack message & queue for sending
+    if SLACK_NOTIFICATIONS_ENABLED:
+        # Construct email message
+        msg_dict = emsg_constructor.construct_slack_notification_msg_dict(customer_name, event_info, slack_channel)
+        db.insert_slack_msg(msg_dict)
 
 
 
@@ -56,6 +64,7 @@ def scan_for_unassigned_notables():
             port = config["splunk_api_port"]
             username = config["username"]
             password = config["password"]
+            slack_channel = config["slack_channel"]
         except KeyError as e:
             print_verbose("[-] Error parsing #{} configuration. {}. Skipping.".format(current_index, e))
             continue
@@ -72,7 +81,6 @@ def scan_for_unassigned_notables():
             continue
 
         print_verbose("\n[+] Successfully connected to '{}'".format(config_name))
-
 
         jobs = service.jobs
         kwargs = {"exec_mode": "normal",
@@ -127,16 +135,15 @@ def scan_for_unassigned_notables():
                             continue
 
                         new_event_count += 1
-                        process_notable_event(config_name, notable_event)
+                        process_notable_event(config_name, notable_event, slack_channel)
                 except ValueError:
                     print_verbose("[*] '{}' Error fetching search results. Skipping...".format(config_name))
 
             i += 1000
 
-
         if new_event_count > 0:
             print_verbose("\n[+] Found {} new events on '{}'".format(new_event_count, config_name))
-            print_verbose("[+] Queued {} event in email queue".format(new_event_count))
+            print_verbose("[+] Queued {} event in notification queue".format(new_event_count))
 
         job.cancel()
         service.logout()
@@ -166,18 +173,31 @@ def construct_email_for_sending(msg_info_dict):
 
 
 
+def process_slack_notifications_queue():
+    msg_list = db.get_unsent_slack_messages()
+    print_verbose("[+] Processing Slack notifications.")
 
-def process_email_queue():
-    if not EMAIL_ALERTS_ENABLED:
-        print_verbose("Email alerts disabled in config.py")
-        return
+    for msg_dict in msg_list:
+        print_verbose("Sending message id '{}'".format(msg_dict["id"]))
+        if slack_services.send_message(msg_dict):
+            db.delete_slack_msg(msg_dict["id"])
 
+
+def process_email_notifications_queue():
     msg_list = db.get_unsent_messages()
-    print_verbose("Processing email queue...")
+    print_verbose("[+] Processing Email notifications.")
 
     for msg_dict in msg_list:
         print_verbose("Sending message id '{}'".format(msg_dict["id"]))
         msg_dict_full = construct_email_for_sending(msg_dict)
 
-        if email_sender.send_message(msg_dict_full):
+        if email_services.send_message(msg_dict_full):
             db.delete_msg(msg_dict["id"])
+
+
+def process_notification_queue():
+    if SLACK_NOTIFICATIONS_ENABLED:
+        process_slack_notifications_queue()
+
+    if EMAIL_NOTIFICATIONS_ENABLED:
+        process_email_notifications_queue()

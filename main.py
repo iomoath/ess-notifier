@@ -17,13 +17,13 @@ def generate_argparser():
     ap.add_argument("-s","--scan-unassigned", action='store_true',
                     help="Scan for unassigned notables [New state]")
 
-    ap.add_argument("-e", "--process-email-queue", action='store_true',
-                    help="Send pending email alerts.")
+    ap.add_argument("-e", "--process-notification-queue", action='store_true',
+                    help="Send pending notifications.")
 
     ap.add_argument("-v", "--verbose", action='store_true',
                     help="Show more information while processing.")
 
-    ap.add_argument("--version", action="version", version='Splunk Enterprise Security - Notables Notifier Version 1.0')
+    ap.add_argument("--version", action="version", version='Splunk Enterprise Security - Notables Notifier Version 1.1')
     return ap
 
 
@@ -33,8 +33,8 @@ def run(args):
 
     if args['scan_unassigned']:
         core.scan_for_unassigned_notables()
-    elif args['process_email_queue']:
-        core.process_email_queue()
+    elif args['process_notification_queue']:
+        core.process_notification_queue()
     else:
         arg_parser.print_help()
         sys.exit()
