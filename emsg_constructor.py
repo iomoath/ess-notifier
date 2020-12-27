@@ -39,7 +39,7 @@ def construct_slack_notification_msg_dict(customer_name, notable_event_info_dict
     message_body += "*Event Time: {}*\n\n".format(notable_event_info_dict['_time'])
     message_body += "*Urgency: {}*\n\n".format(notable_event_info_dict['urgency'])
 
-    message_body += "*Rule name: {}*\n".format(notable_event_info_dict['rule_name'])
+    message_body += "Rule name: {}\n".format(notable_event_info_dict['rule_name'])
     message_body += "Security Domain: {}\n".format(notable_event_info_dict['security_domain'])
     message_body += "Status Group: {}\n\n".format(notable_event_info_dict['status_group'])
 
@@ -48,6 +48,7 @@ def construct_slack_notification_msg_dict(customer_name, notable_event_info_dict
     message_body += "User: {}\n\n".format(notable_event_info_dict['user'])
 
     message_body += "*Event ID: {}*\n".format(notable_event_info_dict['event_id'])
-
+    message_body += '_'*50
+    message_body += '\n'
     msg_dict = {"channel_name": slack_channel, "subject": message_subject, "body": message_body, "attachment": None}
     return msg_dict
