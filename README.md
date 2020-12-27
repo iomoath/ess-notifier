@@ -9,12 +9,15 @@ This tool can be useful for Security Operations Centers (SOC), decreasing time s
 ### Features
 * Ability to connect & scan multiple Splunk instances
 * SMTP * Direct (Relay) email sending
-* Easy to customize email template in emsg_constructor.py
+* Push notifications to Slack
+* Customize email template in emsg_constructor.py
 
 
 ### Prerequisites
 * Python 3
 * splunk-sdk
+* slack
+* slackclient
 
 
 
@@ -42,7 +45,7 @@ Event ID: 227C3B03-8CB7-4A1V-819F-0CED9DB5907D@@notable@@910e1505d0b33e128c486c8
 
 1. Clone or download the project files ```git clone https://github.com/iomoath/ess-notifier```
 2. install required libraries ```pip install -r requirements.txt```
-3. Adjust email sending settigns in ```config.py```
+3. Adjust email & slack notification settigns in ```config.py```
 4. Add Splunk instance(s) information in ```client_configs.json```
 
 To enable auto scan, enable cron service and create the following entries in crontab:
@@ -67,8 +70,8 @@ optional arguments:
   -h, --help            show this help message and exit
   -s, --scan-unassigned
                         Scan for unassigned notables [New state]
-  -e, --process-email-queue
-                        Send pending email alerts.
+  -e, --process-notification-queue
+                        Send pending notifications.
   -v, --verbose         Show more information while processing.
   --version             show program's version number and exit
 ```
@@ -95,28 +98,32 @@ python3 main.py -e
       "splunk_ip":"10.90.250.10",
       "splunk_api_port":8089,
       "username":"ess-notifier",
-      "password":"changeme"
+      "password":"changeme",
+      "slack_channel": null
    },
    {
       "name":"Site-2-SIEM",
       "splunk_ip":"10.91.250.10",
       "splunk_api_port":8089,
       "username":"ess-notifier",
-      "password":"changeme"
+      "password":"changeme",
+      "slack_channel": "site-2-notifications"
    },
    {
       "name":"Site-3-SIEM",
       "splunk_ip":"10.92.250.10",
       "splunk_api_port":8089,
       "username":"ess-notifier",
-      "password":"changeme"
+      "password":"changeme",
+      "slack_channel": "site-3-notifications"
    },
    {
       "name":"Site-4-SIEM",
       "splunk_ip":"10.93.250.10",
       "splunk_api_port":8089,
       "username":"ess-notifier",
-      "password":"changeme"
+      "password":"changeme",
+      "slack_channel": null
    },
 ]
 
