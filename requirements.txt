@@ -1,2 +1,4 @@
 splunk-sdk
 splunklib
+slack
+slackclient
