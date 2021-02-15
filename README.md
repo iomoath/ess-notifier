@@ -83,7 +83,7 @@ Scan for unassigned security notables:
 python3 main.py -s
 ```
 
-After the scan is complete, you can run the follwoing command to send pending alerts if any:
+After the scan is complete, you can run the follwoing command to send pending notifications if any:
 ```
 python3 main.py -e
 ```
