@@ -89,7 +89,7 @@ python3 main.py -e
 ```
 
 
-#### Example on adding multiple Splunk servers information in client_configs.py
+#### Example on adding multiple Splunk servers information in client_configs.json
 
 ```
 [
