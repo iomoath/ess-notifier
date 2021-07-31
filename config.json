@@ -1,0 +1,25 @@
+{
+  "CLIENT_CONFIGS_FILE_NAME": "client_configs.json",
+  "SLACK_NOTIFICATIONS_ENABLED": false,
+  "EXTERNAL_API_NOTIFICATIONS_ENABLED": false,
+  "EMAIL_NOTIFICATIONS_ENABLED": false,
+
+  "USE_SMTP": false,
+  "SMTP_HOST": "smtp.example.org",
+  "SMTP_PORT": 587,
+  "SMTP_USERNAME": "smtp@example.org",
+  "SMTP_PASSWORD": "123456",
+  "SMTP_SSL": true,
+  "FROM": "ess-notifier@example.org",
+  "FROM_NAME": "ESS Notifier",
+  "TO": "soc@example.org",
+
+  "SLACK_API_TOKEN": "",
+
+  "EXTERNAL_API_URLS": ["http://example.org/api", "http://example.net/api"],
+  "ADDITIONAL_JSON_DATA_EXTERNAL_API": {"_parameter_1": "_value_1", "_parameter_2": "_value_2"},
+  "ADDITIONAL_HTTP_HEADERS_EXTERNAL_API": {"header-name": "value", "header-name2": "value"},
+
+  "DATETIME_FORMAT": "%Y-%m-%d %H:%M:%S"
+}
+

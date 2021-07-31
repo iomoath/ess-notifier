@@ -1,8 +1,7 @@
 import sqlite3
-import os
+import common_functions
 
-
-DEFAULT_PATH = os.path.join(os.path.dirname(__file__), 'database.sqlite3')
+DEFAULT_PATH = common_functions.resource_path('database.sqlite3')
 
 
 def get_db_path():
@@ -16,7 +15,6 @@ def db_connect(db_path=DEFAULT_PATH):
 
 
 def create_tables():
-
     notables = """
     CREATE TABLE IF NOT EXISTS events (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,12 +37,19 @@ def create_tables():
         attachment TEXT,
         is_sent VARCHAR(6) DEFAULT 'False')"""
 
+    external_api_msg_query = """
+    CREATE TABLE IF NOT EXISTS external_api_msg (
+    id INTEGER PRIMARY KEY,
+    json_data TEXT NOT NULL,
+    is_sent VARCHAR(6) DEFAULT 'False')"""
+
     conn = db_connect()
     try:
         cursor = conn.cursor()
         cursor.execute(notables)
         cursor.execute(email_msg_query)
         cursor.execute(slack_msg_query)
+        cursor.execute(external_api_msg_query)
     except:
         pass
     finally:
@@ -127,6 +132,22 @@ def insert_slack_msg(msg_dict):
         conn.close()
 
 
+def insert_external_api_msg(msg_json_data64):
+    conn = db_connect()
+    try:
+        cursor = conn.cursor()
+
+        data = (msg_json_data64,)
+        cursor.execute('INSERT INTO external_api_msg(json_data) VALUES (?)', data)
+        return cursor.lastrowid
+    except:
+        conn.rollback()
+        raise
+    finally:
+        conn.commit()
+        conn.close()
+
+
 def delete_msg(msg_id):
     conn = db_connect()
     try:
@@ -147,6 +168,21 @@ def delete_slack_msg(msg_id):
     try:
         cursor = conn.cursor()
         query = """DELETE FROM slack_msg WHERE id=?"""
+        cursor.execute(query, (msg_id,))
+        return cursor.rowcount
+    except:
+        conn.rollback()
+        raise
+    finally:
+        conn.commit()
+        conn.close()
+
+
+def delete_external_api_msg(msg_id):
+    conn = db_connect()
+    try:
+        cursor = conn.cursor()
+        query = """DELETE FROM external_api_msg WHERE id=?"""
         cursor.execute(query, (msg_id,))
         return cursor.rowcount
     except:
@@ -186,7 +222,7 @@ def get_unsent_slack_messages():
     conn = db_connect()
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM slack_msg WHERE is_sent='False' LIMIT 15")
+        cursor.execute("SELECT * FROM slack_msg WHERE is_sent='False' LIMIT 50")
         rows = cursor.fetchall()
         list_messages = []
         for row in rows:
@@ -207,6 +243,27 @@ def get_unsent_slack_messages():
         conn.close()
 
 
+def get_unsent_external_api_messages():
+    conn = db_connect()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM external_api_msg WHERE is_sent='False' LIMIT 50")
+        rows = cursor.fetchall()
+        list_messages = []
+        for row in rows:
+            msg = {
+                "id": row[0],
+                "json_data": row[1],
+                "is_sent": row[2]
+            }
+            list_messages.append(msg)
+        return list_messages
+    except:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
 
 def delete_sent_messages():
     conn = db_connect()
@@ -223,12 +280,26 @@ def delete_sent_messages():
         conn.close()
 
 
-
 def delete_slack_sent_messages():
     conn = db_connect()
     try:
         cursor = conn.cursor()
         query = """DELETE FROM slack_msg WHERE is_sent=?"""
+        cursor.execute(query, ("True",))
+        return cursor.rowcount
+    except:
+        conn.rollback()
+        raise
+    finally:
+        conn.commit()
+        conn.close()
+
+
+def delete_external_api_sent_messages():
+    conn = db_connect()
+    try:
+        cursor = conn.cursor()
+        query = """DELETE FROM external_api_msg WHERE is_sent=?"""
         cursor.execute(query, ("True",))
         return cursor.rowcount
     except:

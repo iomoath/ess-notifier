@@ -1,16 +1,14 @@
 # ESS Notifier
-
-A simple security notable scanner for Splunk ESS SIEM (Enterprise Security). The purpose of this tool is to send email notifications whenever a new security notable event is triggered on Splunk ESS.
-
-
-This tool can be useful for Security Operations Centers (SOC), decreasing time spent on watching multiple Splunk dashboards.
+A notable security event scanner & notifier for Splunk Enterprise Security. The purpose of this tool is to send/push notifications via Email/Slack/REST API whenever a new security notable event is triggered on Splunk ESS.
 
 
 ### Features
-* Ability to connect & scan multiple Splunk instances
-* SMTP * Direct (Relay) email sending
-* Push notifications to Slack
-* Customize email template in emsg_constructor.py
+* Ability to connect & scan multiple Splunk Search Head instances.
+* Send notifications to multiple email addresses via specific SMTP server or SMTP Relay.
+* Push notifications to multiple Slack channels.
+* Can forward Splunk notable events to external APIs via REST API. 
+* Custom external API payloads and HTTP headers.
+* Customize notification templates in emsg_constructor.py
 
 
 ### Prerequisites
@@ -21,7 +19,7 @@ This tool can be useful for Security Operations Centers (SOC), decreasing time s
 
 
 
-Example, Email alert message:
+Sample notification message:
 
 ```
 Event Time: 2020-09-09T01:00:26.000+03:00
@@ -45,8 +43,9 @@ Event ID: 227C3B03-8CB7-4A1V-819F-0CED9DB5907D@@notable@@910e1505d0b33e128c486c8
 
 1. Clone or download the project files ```git clone https://github.com/iomoath/ess-notifier```
 2. install required libraries ```pip install -r requirements.txt```
-3. Adjust email & slack notification settigns in ```config.py```
-4. Add Splunk instance(s) information in ```client_configs.json```
+4. Adjust email & slack notification settigns in ```config.json```
+5. Add Splunk instance(s) information in ```client_configs.json```
+
 
 To enable auto scan, enable cron service and create the following entries in crontab:
 
@@ -60,10 +59,10 @@ Create cron jobs to run every 1 minute. ```$ crontab -e``` and add the below lin
 
 ## Arugments
 ```
-usage:
+usage: 
     Splunk Enterprise Security - Notables Notifier
     https://github.com/iomoath/ess-notifier
-
+    
        [-h] [-s] [-e] [-v] [--version]
 
 optional arguments:
@@ -128,4 +127,23 @@ python3 main.py -e
 ]
 
 ```
+
+
+## Screenshots
+
+```Command line args```
+
+![Command line args](IMGS/ess-notifier-main.png?raw=true "Command line args")
+
+
+
+```config.json```
+
+![config.json](IMGS/config_json.png?raw=true "config.json")
+
+
+
+```client_configs.json```
+
+![client_configs.json](IMGS/config_json.png?raw=true "client_configs.json")
 

@@ -1,14 +1,16 @@
+import config
+import common_functions
 import argparse
 import core
 import sys
-import config
+
 
 arg_parser = None
 
 
 def generate_argparser():
     ascii_logo = """
-    Splunk Enterprise Security - Notables Notifier
+    Splunk Enterprise Security - Notables Notifier 2.0
     https://github.com/iomoath/ess-notifier
     """
 
@@ -23,7 +25,7 @@ def generate_argparser():
     ap.add_argument("-v", "--verbose", action='store_true',
                     help="Show more information while processing.")
 
-    ap.add_argument("--version", action="version", version='Splunk Enterprise Security - Notables Notifier Version 1.1')
+    ap.add_argument("--version", action="version", version='Splunk Enterprise Security - Notables Notifier Version 2.0')
     return ap
 
 
@@ -31,14 +33,15 @@ def run(args):
     if args["verbose"]:
         config.VERBOSE_ENABLED = True
 
+    # Read user configs
+    common_functions.read_user_config()
+
     if args['scan_unassigned']:
         core.scan_for_unassigned_notables()
     elif args['process_notification_queue']:
         core.process_notification_queue()
     else:
-        arg_parser.print_help()
         sys.exit()
-
 
 
 def main():
@@ -46,7 +49,6 @@ def main():
     arg_parser = generate_argparser()
     args = vars(arg_parser.parse_args())
     run(args)
-
 
 
 if __name__ == "__main__":
