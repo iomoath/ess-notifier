@@ -147,3 +147,6 @@ python3 main.py -e
 
 ![client_configs.json](IMGS/config_json.png?raw=true "client_configs.json")
 
+## META
+
+Article: https://c99.sh/ess-notifier-improving-soc-capabilities-and-response/
