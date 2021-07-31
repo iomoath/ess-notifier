@@ -43,7 +43,7 @@ Event ID: 227C3B03-8CB7-4A1V-819F-0CED9DB5907D@@notable@@910e1505d0b33e128c486c8
 
 1. Clone or download the project files ```git clone https://github.com/iomoath/ess-notifier```
 2. install required libraries ```pip install -r requirements.txt```
-4. Adjust email & slack notification settigns in ```config.json```
+4. Adjust your settings in ```config.json```
 5. Add Splunk instance(s) information in ```client_configs.json```
 
 
@@ -82,7 +82,7 @@ Scan for unassigned security notables:
 python3 main.py -s
 ```
 
-After the scan is complete, you can run the follwoing command to send pending alerts if any:
+After the scan is complete, you can run the following command to send pending alerts if any:
 ```
 python3 main.py -e
 ```
