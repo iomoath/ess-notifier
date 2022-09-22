@@ -17,7 +17,13 @@ A notable security event scanner & notifier for Splunk Enterprise Security. The 
 * slack
 * slackclient
 
+<br>
 
+```How It works?```
+
+![How It works?](IMGS/ESS-Noitifier.png?raw=true "ESS Notifier Process Flow")
+
+<br>
 
 Sample notification message:
 
